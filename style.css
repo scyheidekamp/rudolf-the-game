@@ -1,0 +1,46 @@
+body{
+    background: black;
+    margin: 0;
+}
+#container{
+    position: absolute;
+    font-size: 30px;
+    height: 100vh;
+    max-height: 720px;
+}
+#canvas1{
+    position:relative;    
+    height: 100vh;
+    max-height: 720px;
+}
+#slider {
+    width: 100%;
+}
+#win{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 400px;
+    background-color: black;
+    border-radius: 20px;
+    visibility: hidden;
+}
+p{
+    color: white;
+    padding: 50px;
+    text-align: center;
+}
+.refresh-button{
+    position: absolute;
+    float:left;
+    width: 200px;
+    height: 50px;
+    margin-left:150px;
+    margin-right:150px;
+    font-size: 20px;
+    background-color: white;
+    cursor: pointer;
+}

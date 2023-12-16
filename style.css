@@ -44,3 +44,9 @@ p{
     background-color: white;
     cursor: pointer;
 }
+#score{
+    top:0px;
+    position: fixed;
+    width:300px;
+    height: auto;
+}

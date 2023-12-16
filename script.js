@@ -20,18 +20,34 @@ backgroundLayer5.src = 'img/foreground.png'
 const backgroundLayer6 = new Image();
 backgroundLayer6.src = 'img/rudolf.png'
 
+const giftImage1 = new Image();
+giftImage1.src = 'img/gifts/1.png'
+const giftImage2 = new Image();
+giftImage2.src = 'img/gifts/2.png'
+const giftImage3 = new Image();
+giftImage3.src = 'img/gifts/3.png'
+const giftImage4 = new Image();
+giftImage4.src = 'img/gifts/4.png'
+const giftImage5 = new Image();
+giftImage5.src = 'img/gifts/5.png'
+const giftImage6 = new Image();
+giftImage6.src = 'img/gifts/6.png'
+const giftImage7 = new Image();
+giftImage7.src = 'img/gifts/7.png'
+
 window.addEventListener('load', function(){
 
     const gravity = 0.2
     let gameSpeed = 0
     let scrollOffset = 0
+    let gameScore = 0
 
 
     class Player{
         constructor(image){
             this.position = {
                 x:500,
-                y:350
+                y:0
             }
             this.velocity ={
                 x:0,
@@ -50,8 +66,29 @@ window.addEventListener('load', function(){
             this.position.x += this.velocity.x
             if (this.position.y + this.height + this.velocity.y < canvas.height - 12)
                 this.velocity.y += gravity
-            else this.velocity.y = 0
+            else this.velocity.y = 0 
         }
+    }
+
+    class Gift{
+        constructor({x,y,isCollected,image}){
+            this.position = {
+                x,
+                y
+            }
+            this.width = 80
+            this.height = 80
+            this.isCollected = isCollected
+            this.image = image
+        }
+        draw(){
+            if (!this.isCollected){
+                ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+            }
+            
+        }
+
+
     }
 
     class Platform{
@@ -107,6 +144,10 @@ window.addEventListener('load', function(){
         new Platform({x: 1030, y:530, width:300}),new Platform({x: 1350, y:580, width:30}),
         new Platform({x: 1400, y:600, width:100}),new Platform({x: 1540, y:590, width:30}),
         new Platform({x: 1600, y:550, width:30}),new Platform({x: 2570, y:600, width:100})]
+    const gifts = [new Gift({x: 830, y:300, image:giftImage1}),
+        new Gift({x: 1030, y:230, image:giftImage6}),new Gift({x: 1350, y:280, image:giftImage3}),
+        new Gift({x: 1400, y:300, image:giftImage4}),new Gift({x: 1540, y:290, image:giftImage5}),
+        new Gift({x: 1600, y:250, image:giftImage7}),new Gift({x: 2570, y:200, image:giftImage2})]
     const keys = {
         right:{
             pressed: false
@@ -123,7 +164,6 @@ window.addEventListener('load', function(){
 
     refreshButton.addEventListener('click', refreshPage)
     
-
     function animate(){
         ctx.clearRect(0,0, CANVAS_WIDTH, CANVAS_HEIGHT);
         gameObjects.forEach(object => {
@@ -132,6 +172,9 @@ window.addEventListener('load', function(){
         });
         platforms.forEach(platform => {
             platform.draw();
+        });
+        gifts.forEach(gifts => {
+            gifts.draw();
         });
         requestAnimationFrame(animate);
         player.draw()
@@ -149,16 +192,21 @@ window.addEventListener('load', function(){
                 platforms.forEach(platform => {
                     platform.position.x -= 5
                 });
+                gifts.forEach(gifts => {
+                    gifts.position.x -= 5
+                });
             } else if (keys.left.pressed){
                 scrollOffset -= 5
                 gameSpeed = -2.5
                 platforms.forEach(platform => {
                     platform.position.x += 5
-                    
+                });
+                gifts.forEach(gifts => {
+                    gifts.position.x += 5
                 });
             } else (gameSpeed = 0)
         }
-        console.log(scrollOffset)
+        //console.log(scrollOffset)
 
         //platform collision detection
         platforms.forEach(platform => {
@@ -169,25 +217,47 @@ window.addEventListener('load', function(){
             player.velocity.y = 0 
             }
         })
+        //gifts collision detection
+        gifts.forEach((gift, index) => {
+            /* if (index === 1){
+                console.log(player.position.y, ' <= ', gift.position.y + gift.height);
+                console.log(player.position.x, ' >= ', gift.position.x);
+            } */
+            if (!gift.isCollected && 
+                player.position.y + player.height >= gift.position.y && 
+                player.position.y <= gift.position.y + gift.height && 
+                player.position.x + player.width >= gift.position.x && // Adjust for scrollOffset
+                player.position.x <= gift.position.x + gift.width) { // Adjust for scrollOffset
+                
+                gift.isCollected = true;
+                gameScore += 100;
+                console.log(gameScore);
+            } 
+        });
+        const showGameScore = document.getElementById('showGameScore');
+        showGameScore.innerHTML = gameScore;
+        const finalGameScore = document.getElementById('finalGameScore');
+        finalGameScore.innerHTML = gameScore;
+        
         if (scrollOffset > 2709){
             console.log('you win')
             document.getElementById('win').style.visibility = "visible";
         }
     }
+    
+    
     animate();
+    
 
     window.addEventListener('keydown', ({keyCode}) => {
         switch (keyCode){
             case 37:
-                console.log('left')
                 keys.left.pressed = true
                 break
             case 39:
-                console.log('right')
                 keys.right.pressed = true
                 break
             case 38:
-                console.log('up')
                 player.velocity.y = -7
                 break
         }
@@ -196,18 +266,14 @@ window.addEventListener('load', function(){
     window.addEventListener('keyup', ({keyCode}) => {
         switch (keyCode){
             case 37:
-                console.log('left')
                 keys.left.pressed = false
                 break
             case 39:
-                console.log('right')
                 keys.right.pressed = false
                 break
             case 38:
-                console.log('up')
                 break
             case 40:
-                console.log('down')
                 break
         }
     })
